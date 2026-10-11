@@ -1,0 +1,12 @@
+{
+  "name": "E2E-Spot SoccerNet-v2 RegNetY-200MF GSM BiGRU",
+  "checkpoint": "checkpoint_088.pt",
+  "sha256": "2d8376e96198c07f3e73c1712ffb1a4b2524feb4baa609479935c86d6eeb4ba3",
+  "url": "https://raw.githubusercontent.com/jhong93/e2e-spot-models/main/soccer_rny002gsm_gru_rgb/checkpoint_088.pt",
+  "config_url": "https://raw.githubusercontent.com/jhong93/e2e-spot-models/main/soccer_rny002gsm_gru_rgb/config.json",
+  "source": "https://github.com/jhong93/spot",
+  "source_commit": "edec4201471beed631bed374bd0b95fcdc8a2f4f",
+  "goal_class_index": 6,
+  "class_order": "Background, followed by alphabetically sorted SoccerNet-v2 labels",
+  "license": "BSD-3-Clause code; GSM component BSD-2-Clause"
+}
