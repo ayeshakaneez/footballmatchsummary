@@ -77,6 +77,13 @@ class GoalFromShotTests(unittest.TestCase):
         events = run(shot_then(in_net + lost + stray + later))
         self.assertIn("goal", [e["event"] for e in events])
 
+    def test_immediate_false_ball_within_loose_mouth_margin_does_not_undo_goal(self):
+        in_net = [(scene(), ball_at(990.0, 470.0)) for _ in range(3)]
+        stray = [(scene(), ball_at(1090.0, 590.0)) for _ in range(6)]
+        lost = [(scene(), None) for _ in range(90)]
+        events = run(shot_then(in_net + stray + lost))
+        self.assertIn("goal", [e["event"] for e in events])
+
     def test_an_unread_shooter_scores_for_the_side_the_keeper_does_not_play_for(self):
         # Regression (FC clip): the shooter's kit was unread and the goal came
         # out as "unknown_team"; it must never take the keeper's own side.

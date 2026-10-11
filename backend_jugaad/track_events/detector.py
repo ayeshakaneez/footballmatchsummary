@@ -1000,7 +1000,10 @@ class TrackEventDetector:
     # ------------------------------------------------------------ goal from shot
     def _search_goal_mouth(self, frame_number: int, frame: np.ndarray, players: Dict[int, dict]) -> None:
         """Look for the goal frame near the keeper while the ball is close to him."""
-        if frame_number - self._last_mouth_search < MOUTH_EVERY_SECONDS * self.fps or self._scale <= 0:
+        # During a pending shot the ball can pass the goal in just a few frames.
+        # Search each frame then; otherwise retain the cheaper periodic search.
+        interval = 1 if self._goal_checks else MOUTH_EVERY_SECONDS * self.fps
+        if frame_number - self._last_mouth_search < interval or self._scale <= 0:
             return
         keepers = [p["bbox"] for p in players.values() if p.get("role") == "goalkeeper"]
         recent = [s for s in self._ball if frame_number - s[0] <= 0.5 * self.fps]
@@ -1058,6 +1061,24 @@ class TrackEventDetector:
             if s[0] - after[-1][0] >= gap:
                 lost_in_goal = True
                 break
+            # The loose goal-mouth margin can still contain a new false ball
+            # (for example, a fixed object beside the net). Reject an
+            # implausible one-frame leap before testing whether it came out.
+            if len(after) >= 3:
+                elapsed = max(1, s[0] - after[-1][0])
+                jump = _distance((s[1], s[2]), (after[-1][1], after[-1][2]))
+                inbound = _distance(
+                    (after[-1][1], after[-1][2]), (after[-2][1], after[-2][2])
+                ) / max(1, after[-1][0] - after[-2][0])
+                approach = samples[max(0, inside[0] - 3)]
+                progress = (after[-1][1] - approach[1], after[-1][2] - approach[2])
+                leap = (s[1] - after[-1][1], s[2] - after[-1][2])
+                moving_deeper = progress[0] * leap[0] + progress[1] * leap[1] > 0
+                reference_mouth = self._mouth_at(after[-1][0])
+                if (moving_deeper and reference_mouth is not None
+                        and jump > max(0.6 * mouth_height(reference_mouth), 4.0 * inbound * elapsed)):
+                    lost_in_goal = True
+                    break
             quad = self._mouth_at(s[0])
             if quad is not None and not in_mouth(quad, (s[1], s[2]), margin_heights=GOAL_OUT_MARGIN):
                 return None  # came back out: a save, a rebound, the post
