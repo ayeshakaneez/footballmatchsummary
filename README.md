@@ -8,9 +8,10 @@ The backend detects events, produces highlight clips, reads jersey numbers, and 
 
 - `backend_jugaad/`: backend source, tests, roster JSON files, training notebooks, documentation, and model weights.
 - `scripts/`: launcher and compatibility adapter for the original database structure.
+- `frontend/`: React frontend source and dependency manifests, including the live frame-count processing display.
 - `AGENTS.md`: guidance for coding agents. Additional backend guidance is in `backend_jugaad/AGENTS.md`.
 
-The separate React frontend, installed Python packages, local SQL database, uploaded videos, generated highlights, and OCR download caches are not included. The backend does include its own static web interface.
+Installed packages, the local SQL database, uploaded videos, generated highlights, and OCR download caches are not included. The backend also includes its own static web interface.
 
 ## Pretrained models
 
@@ -77,7 +78,19 @@ $env:FFPROBE_BINARY = 'C:\ffmpeg\bin\ffprobe.exe'
 
 Open the bundled interface at http://localhost:8001, API documentation at http://localhost:8001/docs, or check http://localhost:8001/health. Startup creates the demo login `demo@footyai.com` / `password123`; this is intended for local testing.
 
-For the separate frontend, configure its backend URL to this server. On another laptop on the same network, use `http://<backend-laptop-LAN-IP>:8001` and permit port 8001 through the firewall on the private network. `localhost` always refers to the laptop opening the page.
+## React frontend
+
+With Node.js and npm installed, open another PowerShell terminal at the repository root:
+
+```powershell
+cd frontend
+npm ci
+npm run dev -- --host 0.0.0.0
+```
+
+Open the URL Vite prints (normally http://localhost:5173). The default backend URL uses the browser's hostname on port 8001. If the backend runs on a different machine, create `frontend/.env.local` with `VITE_API_BASE_URL=http://<backend-laptop-LAN-IP>:8001`, then restart Vite. Permit the necessary ports through the firewall on the private network. `localhost` always refers to the laptop opening the page.
+
+During the frame-detection stage, the processing screen shows `Detecting frames — X of Y` using real backend counts. The earlier video-model stage and later summary stage retain their own status messages. These counts are separate from the weighted overall progress percentage. Restart an already-running backend after updating to load the new progress fields.
 
 ## Notes
 

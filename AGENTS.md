@@ -3,6 +3,7 @@
 ## Project layout
 
 - `backend_jugaad/` contains the active Python backend and its pretrained weights.
+- `frontend/` contains the React application; run `npm run build` there to verify frontend changes.
 - `scripts/start-backend.ps1` starts the API on port 8001 by default.
 - `scripts/jugaad_server.py` adapts the backend to the legacy database structure.
 - Read `backend_jugaad/AGENTS.md` for additional instructions when working there.

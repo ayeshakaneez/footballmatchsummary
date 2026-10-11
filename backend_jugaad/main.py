@@ -486,7 +486,7 @@ def describe_event(event):
     return f"{event_type.upper()} — {team}"
 
 
-def process_video(args, progress_cb=None):
+def process_video(args, progress_cb=None, frame_progress_cb=None):
     # Heavy model imports are delayed so configuration validation and --help work
     # without initializing Ultralytics/Torch or their user-level cache folders.
     from event_detector import EventDetector
@@ -533,6 +533,8 @@ def process_video(args, progress_cb=None):
     height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = float(capture.get(cv2.CAP_PROP_FPS)) or 25.0
     total_frames = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
+    if frame_progress_cb is not None:
+        frame_progress_cb(0, total_frames)
 
     write_video = bool(getattr(args, "write_annotated_video", False))
     show_video = not args.no_display
@@ -697,6 +699,8 @@ def process_video(args, progress_cb=None):
 
                 frame_number += 1
 
+            if frame_progress_cb is not None:
+                frame_progress_cb(frame_number, total_frames)
             if progress_cb is not None:
                 if use_video_model and total_frames > 0:
                     progress_cb(int(1000 * (.15 + .85 * frame_number / total_frames)), 1000)

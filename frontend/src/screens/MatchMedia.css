@@ -1,0 +1,6 @@
+.summary-highlights { padding: 24px 16px; width: 100%; max-width: 1328px; margin: 0 auto; }
+.summary-highlights h2 { font-size: 18px; font-weight: 700; margin-bottom: 18px; }
+.summary-highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 640px)); justify-content: center; gap: 24px; }
+.summary-highlight-card { margin: 0; min-width: 0; background: white; border: 1px solid #e0e8e1; border-radius: 14px; overflow: hidden; }
+.summary-highlight-card video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #102213; }
+.summary-highlight-card figcaption { font-size: 14px; font-weight: 600; padding: 14px 18px; }

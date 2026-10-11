@@ -138,6 +138,8 @@ def _create_job(video_path: Path, user_id: int | None) -> str:
             "status": "uploaded",
             "stage": "Video uploaded",
             "progress_percent": 10,
+            "processed_frames": None,
+            "total_frames": None,
             "video_path": str(video_path),
             "user_id": user_id,
             "team_a_name": None,
@@ -514,7 +516,13 @@ def _process_job(job_id: str) -> None:
             write_annotated_video=False,
             no_display=True,
         )
-        events = process_video(arguments, progress_cb=report_progress)
+        def report_frames(processed_frames: int, total_frames: int) -> None:
+            # Real frame counts are separate from the weighted overall percentage.
+            _set_job(job_id, processed_frames=processed_frames, total_frames=total_frames)
+
+        events = process_video(
+            arguments, progress_cb=report_progress, frame_progress_cb=report_frames,
+        )
         _set_job(job_id, stage="Saving match summary", progress_percent=PROGRESS_PERSIST)
         match_id = _persist_match(job, events, fps)
 
@@ -722,6 +730,8 @@ def job_status(job_id: str):
             "status",
             "stage",
             "progress_percent",
+            "processed_frames",
+            "total_frames",
             "team_candidates",
             "error",
         )
